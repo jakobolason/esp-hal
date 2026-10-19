@@ -2,7 +2,7 @@
 name = "esp-radio"
 version = "1.0.0-beta.2"
 edition = "2024"
-rust-version  = "1.95.0"
+rust-version = "1.95.0"
 description = "A driver for the radio peripherals found in Espressif microcontrollers for and bare-metal Rust"
 documentation = "https://docs.espressif.com/projects/rust/esp-radio/latest/"
 keywords = ["wifi", "bluetooth", "esp-now", "esp32", "no-std"]
@@ -13,49 +13,159 @@ license = "MIT OR Apache-2.0"
 [package.metadata.espressif]
 chip-features-matter = true
 semver-checked = true
-doc-config = { features = ["esp-hal/unstable", "esp-hal/rt", "esp-alloc/global-allocator", "procmacros/__esp_idf_bootloader", "defmt"], append = [
-    { if = 'wifi_driver_supported', features = ["wifi", "wifi-eap", "esp-now", "sniffer"] },
-    { if = 'wifi_driver_supported && wifi_csi_supported', features = ["csi"] },
-    { if = 'bt_driver_supported', features = ["ble"] },
-    { if = 'ieee802154_driver_supported', features = ["ieee802154", "__docs_build"] },
-    { if = 'wifi_driver_supported && bt_driver_supported', features = ["coex"] },
-    { if = 'wifi_driver_supported || bt_driver_supported || ieee802154_driver_supported', features = ["unstable"] },
+doc-config = { features = [
+  "esp-hal/unstable",
+  "esp-hal/rt",
+  "esp-alloc/global-allocator",
+  "procmacros/__esp_idf_bootloader",
+  "defmt",
+], append = [
+  { if = 'wifi_driver_supported', features = [
+    "wifi",
+    "wifi-eap",
+    "esp-now",
+    "sniffer",
+  ] },
+  { if = 'wifi_driver_supported && wifi_csi_supported', features = [
+    "csi",
+  ] },
+  { if = 'bt_driver_supported', features = [
+    "ble",
+  ] },
+  { if = 'ieee802154_driver_supported', features = [
+    "ieee802154",
+    "__docs_build",
+  ] },
+  { if = 'wifi_driver_supported && bt_driver_supported', features = [
+    "coex",
+  ] },
+  { if = 'wifi_driver_supported || bt_driver_supported || ieee802154_driver_supported', features = [
+    "unstable",
+  ] },
 ] }
 # Semver guarantees cover only the stable API, so the `unstable` feature is left OFF: the
 # `instability_disable_unstable_docs` escape (set in `build_doc_json`) then drops all
 # `#[instability::unstable]` items from the baseline. `wifi` is the only radio feature that
 # does not pull in `unstable`.
-semver-config = { features = ["esp-hal/rt", "esp-alloc/global-allocator", "procmacros/__esp_idf_bootloader", "defmt"], append = [
-    { if = 'wifi_driver_supported', features = ["wifi"] },
+semver-config = { features = [
+  "esp-hal/rt",
+  "esp-alloc/global-allocator",
+  "procmacros/__esp_idf_bootloader",
+  "defmt",
+], append = [
+  { if = 'wifi_driver_supported', features = [
+    "wifi",
+  ] },
 ] }
 check-configs = [
-    { features = ["esp-hal/rt"] },
-    { features = ["esp-hal/rt", "defmt"] },
-    { features = ["esp-hal/rt", "defmt"], env = { ESP_RADIO_CONFIG_DUMP_PACKETS = "true" } },
-    { features = ["esp-hal/rt", "wifi"], if = 'wifi_driver_supported' },
-    { features = ["esp-hal/rt", "wifi"], env = { ESP_RADIO_CONFIG_WIFI_NAN_SYNC_ENABLE = "true" }, if = 'wifi_driver_supported && wifi_has_nan' },
-    { features = ["esp-hal/rt", "wifi"], env = { ESP_RADIO_CONFIG_WIFI_FTM_ENABLE = "true" }, if = 'wifi_driver_supported && wifi_has_ftm' },
-    # feature(c_variadic) requires nightly compiler, but we can't configure the toolchain here. Only check xtensa chips, where the compiler has nightly features enabled.
-    { features = ["esp-hal/unstable", "esp-hal/rt", "wifi", "print-logs-from-driver", "unstable"], if = 'wifi_driver_supported && xtensa' },
-    { features = ["esp-hal/unstable", "esp-hal/rt", "unstable", "defmt", "wifi", "wifi-eap", "esp-now", "sniffer"], if = 'wifi_driver_supported' },
-    { features = ["esp-hal/unstable", "esp-hal/rt", "unstable", "wifi", "wifi-eap", "esp-now", "sniffer"], env = { ESP_RADIO_CONFIG_WIFI_SOFTAP_SUPPORT = "false" }, if = 'wifi_driver_supported' },
-    { features = ["esp-hal/unstable", "esp-hal/rt", "unstable", "ble"], if = 'bt_driver_supported' },
-    { features = ["esp-hal/unstable", "esp-hal/rt", "unstable", "ieee802154"], if = 'ieee802154_driver_supported' },
-    { features = ["esp-hal/unstable", "esp-hal/rt", "unstable", "defmt", "wifi", "wifi-eap", "esp-now", "sniffer", "ble", "coex"], if = 'wifi_driver_supported && bt_driver_supported' },
-    { features = ["esp-hal/unstable", "esp-hal/rt", "wifi-eap", "unstable"], if = 'wifi_driver_supported' },
+  { features = [
+    "esp-hal/rt",
+  ] },
+  { features = [
+    "esp-hal/rt",
+    "defmt",
+  ] },
+  { features = [
+    "esp-hal/rt",
+    "defmt",
+  ], env = { ESP_RADIO_CONFIG_DUMP_PACKETS = "true" } },
+  { features = [
+    "esp-hal/rt",
+    "wifi",
+  ], if = 'wifi_driver_supported' },
+  { features = [
+    "esp-hal/rt",
+    "wifi",
+  ], env = { ESP_RADIO_CONFIG_WIFI_NAN_SYNC_ENABLE = "true" }, if = 'wifi_driver_supported && wifi_has_nan' },
+  { features = [
+    "esp-hal/rt",
+    "wifi",
+  ], env = { ESP_RADIO_CONFIG_WIFI_FTM_ENABLE = "true" }, if = 'wifi_driver_supported && wifi_has_ftm' },
+  # feature(c_variadic) requires nightly compiler, but we can't configure the toolchain here. Only check xtensa chips, where the compiler has nightly features enabled.
+  { features = [
+    "esp-hal/unstable",
+    "esp-hal/rt",
+    "wifi",
+    "print-logs-from-driver",
+    "unstable",
+  ], if = 'wifi_driver_supported && xtensa' },
+  { features = [
+    "esp-hal/unstable",
+    "esp-hal/rt",
+    "unstable",
+    "defmt",
+    "wifi",
+    "wifi-eap",
+    "esp-now",
+    "sniffer",
+  ], if = 'wifi_driver_supported' },
+  { features = [
+    "esp-hal/unstable",
+    "esp-hal/rt",
+    "unstable",
+    "wifi",
+    "wifi-eap",
+    "esp-now",
+    "sniffer",
+  ], env = { ESP_RADIO_CONFIG_WIFI_SOFTAP_SUPPORT = "false" }, if = 'wifi_driver_supported' },
+  { features = [
+    "esp-hal/unstable",
+    "esp-hal/rt",
+    "unstable",
+    "ble",
+  ], if = 'bt_driver_supported' },
+  { features = [
+    "esp-hal/unstable",
+    "esp-hal/rt",
+    "unstable",
+    "ieee802154",
+  ], if = 'ieee802154_driver_supported' },
+  { features = [
+    "esp-hal/unstable",
+    "esp-hal/rt",
+    "unstable",
+    "defmt",
+    "wifi",
+    "wifi-eap",
+    "esp-now",
+    "sniffer",
+    "ble",
+    "coex",
+  ], if = 'wifi_driver_supported && bt_driver_supported' },
+  { features = [
+    "esp-hal/unstable",
+    "esp-hal/rt",
+    "wifi-eap",
+    "unstable",
+  ], if = 'wifi_driver_supported' },
 ]
 clippy-configs = [
-    { features = ["esp-hal/rt"] },
-    { features = ["esp-hal/unstable", "esp-hal/rt", "wifi", "wifi-eap", "unstable"], if = 'wifi_driver_supported', append = [
-        { features = ["ble"], if = 'bt_driver_supported' },
-    ] },
-    # `ieee802154` cannot be combined with `wifi`, so it needs a config of its own.
-    { features = ["esp-hal/unstable", "esp-hal/rt", "unstable", "ieee802154"], if = 'ieee802154_driver_supported' },
+  { features = [
+    "esp-hal/rt",
+  ] },
+  { features = [
+    "esp-hal/unstable",
+    "esp-hal/rt",
+    "wifi",
+    "wifi-eap",
+    "unstable",
+  ], if = 'wifi_driver_supported', append = [
+    { features = [
+      "ble",
+    ], if = 'bt_driver_supported' },
+  ] },
+  # `ieee802154` cannot be combined with `wifi`, so it needs a config of its own.
+  { features = [
+    "esp-hal/unstable",
+    "esp-hal/rt",
+    "unstable",
+    "ieee802154",
+  ], if = 'ieee802154_driver_supported' },
 ]
 
 [lib]
 bench = false
-test  = false
+test = false
 
 [dependencies]
 esp-hal = { version = "~1.2.0", path = "../esp-hal", default-features = false }
@@ -67,9 +177,11 @@ esp-radio-rtos-driver = { version = "0.4.2", path = "../esp-radio-rtos-driver" }
 instability = "0.3.12"
 
 # Unstable dependencies that are not (strictly) part of the public API
-allocator-api2 = { version = "0.3.0", default-features = false, features = ["alloc"] }
+allocator-api2 = { version = "0.3.0", default-features = false, features = [
+  "alloc",
+] }
 docsplay = { version = "0.1", default-features = false }
-document-features  = "0.2"
+document-features = "0.2"
 esp-alloc = { version = "0.11.0", path = "../esp-alloc", optional = true, default-features = false }
 esp-config = { version = "0.8.0", path = "../esp-config" }
 esp-metadata-generated = { version = "0.6.0", path = "../esp-metadata-generated" }
@@ -96,16 +208,36 @@ esp-wifi-sys-esp32s2 = { version = "0.3.0", optional = true, git = "https://gith
 esp-wifi-sys-esp32s3 = { version = "0.3.0", optional = true, git = "https://github.com/esp-rs/esp-wifi-sys.git", rev = "a09ab97" }
 esp-wifi-sys-esp32s31 = { version = "0.3.0", optional = true, git = "https://github.com/esp-rs/esp-wifi-sys.git", rev = "a09ab97" }
 
-esp32   = { version = "0.42", features = ["critical-section"], optional = true, git = "https://github.com/esp-rs/esp-pacs.git", rev = "33d9b66" }
-esp32c2 = { version = "0.31", features = ["critical-section"], optional = true, git = "https://github.com/esp-rs/esp-pacs.git", rev = "33d9b66" }
-esp32c3 = { version = "0.34", features = ["critical-section"], optional = true, git = "https://github.com/esp-rs/esp-pacs.git", rev = "33d9b66" }
-esp32c5 = { version = "0.4",  features = ["critical-section"], optional = true, git = "https://github.com/esp-rs/esp-pacs.git", rev = "33d9b66" }
-esp32c6 = { version = "0.25", features = ["critical-section"], optional = true, git = "https://github.com/esp-rs/esp-pacs.git", rev = "33d9b66" }
-esp32c61 = { version = "0.5", features = ["critical-section"], optional = true, git = "https://github.com/esp-rs/esp-pacs.git", rev = "33d9b66" }
-esp32h2 = { version = "0.21", features = ["critical-section"], optional = true, git = "https://github.com/esp-rs/esp-pacs.git", rev = "33d9b66" }
-esp32s2 = { version = "0.33", features = ["critical-section"], optional = true, git = "https://github.com/esp-rs/esp-pacs.git", rev = "33d9b66" }
-esp32s3 = { version = "0.37", features = ["critical-section"], optional = true, git = "https://github.com/esp-rs/esp-pacs.git", rev = "33d9b66" }
-esp32s31 = { version = "0.3", features = ["critical-section"], optional = true, git = "https://github.com/esp-rs/esp-pacs.git", rev = "33d9b66" }
+esp32 = { version = "0.42", features = [
+  "critical-section",
+], optional = true, git = "https://github.com/esp-rs/esp-pacs.git", rev = "33d9b66" }
+esp32c2 = { version = "0.31", features = [
+  "critical-section",
+], optional = true, git = "https://github.com/esp-rs/esp-pacs.git", rev = "33d9b66" }
+esp32c3 = { version = "0.34", features = [
+  "critical-section",
+], optional = true, git = "https://github.com/esp-rs/esp-pacs.git", rev = "33d9b66" }
+esp32c5 = { version = "0.4", features = [
+  "critical-section",
+], optional = true, git = "https://github.com/esp-rs/esp-pacs.git", rev = "33d9b66" }
+esp32c6 = { version = "0.25", features = [
+  "critical-section",
+], optional = true, git = "https://github.com/esp-rs/esp-pacs.git", rev = "33d9b66" }
+esp32c61 = { version = "0.5", features = [
+  "critical-section",
+], optional = true, git = "https://github.com/esp-rs/esp-pacs.git", rev = "33d9b66" }
+esp32h2 = { version = "0.21", features = [
+  "critical-section",
+], optional = true, git = "https://github.com/esp-rs/esp-pacs.git", rev = "33d9b66" }
+esp32s2 = { version = "0.33", features = [
+  "critical-section",
+], optional = true, git = "https://github.com/esp-rs/esp-pacs.git", rev = "33d9b66" }
+esp32s3 = { version = "0.37", features = [
+  "critical-section",
+], optional = true, git = "https://github.com/esp-rs/esp-pacs.git", rev = "33d9b66" }
+esp32s31 = { version = "0.3", features = [
+  "critical-section",
+], optional = true, git = "https://github.com/esp-rs/esp-pacs.git", rev = "33d9b66" }
 
 # Optional dependencies enabling ecosystem features
 embedded-io-06 = { package = "embedded-io", version = "0.6", default-features = false, optional = true }
@@ -114,7 +246,7 @@ embedded-io-07 = { package = "embedded-io", version = "0.7", default-features = 
 embedded-io-async-07 = { package = "embedded-io-async", version = "0.7", default-features = false, optional = true }
 embassy-net-driver-02 = { package = "embassy-net-driver", version = "0.2.0", optional = true }
 xarxa-driver = { version = "0.1.0", features = ["async"], optional = true }
-bt-hci = { version = "0.9.0", optional = true }
+bt-hci = { version = "0.11.0", optional = true }
 bt-hci-transport = { version = "0.1.0", optional = true }
 
 # Logging interfaces, they are mutually exclusive so they need to be behind separate features.
@@ -123,7 +255,9 @@ log-04 = { package = "log", version = "0.4.27", optional = true }
 
 [build-dependencies]
 esp-config = { version = "0.8.0", path = "../esp-config", features = ["build"] }
-esp-metadata-generated = { version = "0.6.0", path = "../esp-metadata-generated", features = ["build-script"] }
+esp-metadata-generated = { version = "0.6.0", path = "../esp-metadata-generated", features = [
+  "build-script",
+] }
 
 [dev-dependencies]
 esp-rtos = { version = "0.4.0", path = "../esp-rtos" }
@@ -154,17 +288,17 @@ esp-alloc = ["dep:esp-alloc"]
 ## 
 ## ⚠️ This feature is considered unstable.
 print-logs-from-driver = [
-    "__has_unstable_feature_enabled",
-    "esp-wifi-sys-esp32?/sys-logs",
-    "esp-wifi-sys-esp32c2?/sys-logs",
-    "esp-wifi-sys-esp32c3?/sys-logs",
-    "esp-wifi-sys-esp32c5?/sys-logs",
-    "esp-wifi-sys-esp32c6?/sys-logs",
-    "esp-wifi-sys-esp32c61?/sys-logs",
-    "esp-wifi-sys-esp32h2?/sys-logs",
-    "esp-wifi-sys-esp32s2?/sys-logs",
-    "esp-wifi-sys-esp32s3?/sys-logs",
-    "esp-wifi-sys-esp32s31?/sys-logs",
+  "__has_unstable_feature_enabled",
+  "esp-wifi-sys-esp32?/sys-logs",
+  "esp-wifi-sys-esp32c2?/sys-logs",
+  "esp-wifi-sys-esp32c3?/sys-logs",
+  "esp-wifi-sys-esp32c5?/sys-logs",
+  "esp-wifi-sys-esp32c6?/sys-logs",
+  "esp-wifi-sys-esp32c61?/sys-logs",
+  "esp-wifi-sys-esp32h2?/sys-logs",
+  "esp-wifi-sys-esp32s2?/sys-logs",
+  "esp-wifi-sys-esp32s3?/sys-logs",
+  "esp-wifi-sys-esp32s31?/sys-logs",
 ]
 
 #! ### Chip selection
@@ -289,18 +423,18 @@ esp32s31 = [
 #DOC_IF has("wifi_driver_supported")
 ## Enable Wi-Fi support.
 wifi = [
-    "dep:enumset",
-    "dep:embassy-net-driver-02",
-    "dep:xarxa-driver",
-    "esp-wifi-sys-esp32?/wifi",
-    "esp-wifi-sys-esp32c2?/wifi",
-    "esp-wifi-sys-esp32c3?/wifi",
-    "esp-wifi-sys-esp32c5?/wifi",
-    "esp-wifi-sys-esp32c6?/wifi",
-    "esp-wifi-sys-esp32c61?/wifi",
-    "esp-wifi-sys-esp32s2?/wifi",
-    "esp-wifi-sys-esp32s3?/wifi",
-    "esp-wifi-sys-esp32s31?/wifi",
+  "dep:enumset",
+  "dep:embassy-net-driver-02",
+  "dep:xarxa-driver",
+  "esp-wifi-sys-esp32?/wifi",
+  "esp-wifi-sys-esp32c2?/wifi",
+  "esp-wifi-sys-esp32c3?/wifi",
+  "esp-wifi-sys-esp32c5?/wifi",
+  "esp-wifi-sys-esp32c6?/wifi",
+  "esp-wifi-sys-esp32c61?/wifi",
+  "esp-wifi-sys-esp32s2?/wifi",
+  "esp-wifi-sys-esp32s3?/wifi",
+  "esp-wifi-sys-esp32s31?/wifi",
 ]
 
 ## Enable Wi-Fi Enterprise Authentication Protocol (EAP) support.
@@ -324,20 +458,20 @@ sniffer = ["wifi", "__has_unstable_feature_enabled"]
 ##
 ## ⚠️ This feature is considered unstable.
 ble = [
-    "esp-hal/__bluetooth",
-    "dep:bt-hci",
-    "dep:bt-hci-transport",
-    "dep:enumset",
-    "__has_unstable_feature_enabled",
-    "esp-wifi-sys-esp32?/bt",
-    "esp-wifi-sys-esp32c2?/bt",
-    "esp-wifi-sys-esp32c3?/bt",
-    "esp-wifi-sys-esp32c5?/bt",
-    "esp-wifi-sys-esp32c6?/bt",
-    "esp-wifi-sys-esp32c61?/bt",
-    "esp-wifi-sys-esp32h2?/bt",
-    "esp-wifi-sys-esp32s3?/bt",
-    "esp-wifi-sys-esp32s31?/bt",
+  "esp-hal/__bluetooth",
+  "dep:bt-hci",
+  "dep:bt-hci-transport",
+  "dep:enumset",
+  "__has_unstable_feature_enabled",
+  "esp-wifi-sys-esp32?/bt",
+  "esp-wifi-sys-esp32c2?/bt",
+  "esp-wifi-sys-esp32c3?/bt",
+  "esp-wifi-sys-esp32c5?/bt",
+  "esp-wifi-sys-esp32c6?/bt",
+  "esp-wifi-sys-esp32c61?/bt",
+  "esp-wifi-sys-esp32h2?/bt",
+  "esp-wifi-sys-esp32s3?/bt",
+  "esp-wifi-sys-esp32s31?/bt",
 ]
 #DOC_ENDIF
 
@@ -363,13 +497,13 @@ csi = ["__has_unstable_feature_enabled"]
 ##
 ## ⚠️ This feature is considered unstable.
 ieee802154 = [
-    "dep:byte",
-    "dep:ieee802154",
-    "__has_unstable_feature_enabled",
-    "esp-wifi-sys-esp32c5?/ieee802154",
-    "esp-wifi-sys-esp32c6?/ieee802154",
-    "esp-wifi-sys-esp32h2?/ieee802154",
-    "esp-wifi-sys-esp32s31?/ieee802154",
+  "dep:byte",
+  "dep:ieee802154",
+  "__has_unstable_feature_enabled",
+  "esp-wifi-sys-esp32c5?/ieee802154",
+  "esp-wifi-sys-esp32c6?/ieee802154",
+  "esp-wifi-sys-esp32h2?/ieee802154",
+  "esp-wifi-sys-esp32s31?/ieee802154",
 ]
 #DOC_ENDIF
 
@@ -378,42 +512,42 @@ ieee802154 = [
 #! ### Logging Feature Flags
 ## Enable logging output using version 0.4 of the `log` crate.
 log-04 = [
-    "dep:log-04",
-   "esp-hal/log-04",
-   "esp-wifi-sys-esp32?/log",
-   "esp-wifi-sys-esp32c2?/log",
-   "esp-wifi-sys-esp32c3?/log",
-   "esp-wifi-sys-esp32c5?/log",
-   "esp-wifi-sys-esp32c6?/log",
-   "esp-wifi-sys-esp32c61?/log",
-   "esp-wifi-sys-esp32h2?/log",
-   "esp-wifi-sys-esp32s2?/log",
-   "esp-wifi-sys-esp32s3?/log",
-   "esp-wifi-sys-esp32s31?/log",
-   "esp-phy/log-04",
+  "dep:log-04",
+  "esp-hal/log-04",
+  "esp-wifi-sys-esp32?/log",
+  "esp-wifi-sys-esp32c2?/log",
+  "esp-wifi-sys-esp32c3?/log",
+  "esp-wifi-sys-esp32c5?/log",
+  "esp-wifi-sys-esp32c6?/log",
+  "esp-wifi-sys-esp32c61?/log",
+  "esp-wifi-sys-esp32h2?/log",
+  "esp-wifi-sys-esp32s2?/log",
+  "esp-wifi-sys-esp32s3?/log",
+  "esp-wifi-sys-esp32s31?/log",
+  "esp-phy/log-04",
 ]
 
 ## Enable logging output using `defmt` and implement `defmt::Format` on certain types.
 defmt = [
-    "dep:defmt",
-    "esp-hal/defmt",
-    "bt-hci?/defmt",
-    "bt-hci-transport?/defmt",
-    "esp-wifi-sys-esp32?/defmt",
-    "esp-wifi-sys-esp32c2?/defmt",
-    "esp-wifi-sys-esp32c3?/defmt",
-    "esp-wifi-sys-esp32c5?/defmt",
-    "esp-wifi-sys-esp32c6?/defmt",
-    "esp-wifi-sys-esp32c61?/defmt",
-    "esp-wifi-sys-esp32h2?/defmt",
-    "esp-wifi-sys-esp32s2?/defmt",
-    "esp-wifi-sys-esp32s3?/defmt",
-    "esp-wifi-sys-esp32s31?/defmt",
-    "enumset/defmt",
-    "esp-sync/defmt",
-    "esp-phy/defmt",
-    "ieee802154?/defmt",
-    "xarxa-driver?/defmt",
+  "dep:defmt",
+  "esp-hal/defmt",
+  "bt-hci?/defmt",
+  "bt-hci-transport?/defmt",
+  "esp-wifi-sys-esp32?/defmt",
+  "esp-wifi-sys-esp32c2?/defmt",
+  "esp-wifi-sys-esp32c3?/defmt",
+  "esp-wifi-sys-esp32c5?/defmt",
+  "esp-wifi-sys-esp32c6?/defmt",
+  "esp-wifi-sys-esp32c61?/defmt",
+  "esp-wifi-sys-esp32h2?/defmt",
+  "esp-wifi-sys-esp32s2?/defmt",
+  "esp-wifi-sys-esp32s3?/defmt",
+  "esp-wifi-sys-esp32s31?/defmt",
+  "enumset/defmt",
+  "esp-sync/defmt",
+  "esp-phy/defmt",
+  "ieee802154?/defmt",
+  "xarxa-driver?/defmt",
 ]
 
 #! ### Unstable APIs
